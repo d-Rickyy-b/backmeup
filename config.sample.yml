@@ -1,0 +1,17 @@
+backup_unit_name:
+  sources:
+    - C:\Users\admin\Documents\
+    - 'C:\Users\admin\Dropbox'
+    - "C:\\Users\\admin\\AppData\\Roaming\\.minecraft"
+  destination: 'C:\backups'
+  excludes:
+    - "*.zip"
+    - "*.rar"
+  archive_type: "tar.gz"
+  add_subfolder: false
+  enabled: true
+
+other_unit:
+  sources:
+    - C:\Users\admin\Documents\
+  destination: 'C:\backups'
