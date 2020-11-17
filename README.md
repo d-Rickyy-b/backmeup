@@ -1,6 +1,6 @@
 # backmeup - a lightweight backup utility for the CLI
-When managing several servers, you often come across ... I searched for backup tools online but never found an easy-to-use, leightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
-That's why I created backmeup.
+When managing several servers, you often find yourself in a need of making backups. I searched for tools online that could make it into a painless experience but never found an easy-to-use, lightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
+That's why I created **backmeup**.
 
 ### Key features
 - Easy to use
@@ -104,5 +104,5 @@ The name of your backup is the key at root level. Starting from there you can co
 | add_subfolder | boolean | No | `false` | Creates a new subfolder in <destination> for this unit if set to true |
 | enabled | boolean | No | `true` | Switch to disable each unit individually |
 
-Take care when using quotes in paths. For most strings you don't even need to use quotes at all. When using double quotes (`"`), you must escape backslashes (`\`) when you want to use them as literal characters (such as in Windows paths). 
+Be careful when using quotes in paths. For most strings you don't even need to use quotes at all. When using double quotes (`"`), you must escape backslashes (`\`) when you want to use them as literal characters (such as in Windows paths). 
 Check [this handy article](https://www.yaml.info/learn/quote.html) for learning more about quotes in yaml.
