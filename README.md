@@ -1,6 +1,6 @@
 # backmeup - a lightweight backup utility for the CLI
-When managing several servers, you often come across ... I searched for backup tools online but never found an easy-to-use, lightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
-That's why I created backmeup.
+When managing several servers, you often find yourself in a need of making backups. I searched for tools online that could make it into a painless experience but never found an easy-to-use, lightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
+That's why I created **backmeup**.
 
 ### Key features
 - Easy to use
