@@ -11,22 +11,15 @@ jobs:
     # Config for building the linux x64 binary
     - os: linux
       env:
-        - OSNAME=linux
-        - GOOS=linux
-        - GOARCH=amd64
+        - OSNAME=linux GOOS=linux GOARCH=amd64
     # Config for building the windows x64 binary
     - os: linux
       env:
-        - OSNAME=windows
-        - GOOS=windows
-        - GOARCH=amd64
-        - EXT=.exe
+        - OSNAME=windows GOOS=windows GOARCH=amd64 EXT=.exe
     # Config for building the macos x64 binary
     - os: linux
       env:
-        - OSNAME=macos
-        - GOOS=darwin
-        - GOARCH=amd64
+        - OSNAME=macos GOOS=darwin GOARCH=amd64
 
 
 before_script: sudo apt-get -y install upx
