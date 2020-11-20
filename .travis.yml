@@ -10,22 +10,19 @@ jobs:
   include:
     # Config for building the linux x64 binary
     - os: linux
-      env:
-        - OSNAME=linux GOOS=linux GOARCH=amd64
+      env: OSNAME=linux GIMME_OS=linux GIMME_ARCH=amd64
     # Config for building the windows x64 binary
     - os: linux
-      env:
-        - OSNAME=windows GOOS=windows GOARCH=amd64 EXT=.exe
+      env: OSNAME=windows GIMME_OS=windows GIMME_ARCH=amd64 EXT=.exe
     # Config for building the macos x64 binary
     - os: linux
-      env:
-        - OSNAME=macos GOOS=darwin GOARCH=amd64
+      env: OSNAME=macos GIMME_OS=darwin GIMME_ARCH=amd64
 
 
 before_script: sudo apt-get -y install upx
 
 script:
-  go build -o "backmeup_${OSNAME}_${GOARCH}${EXT}" . && upx "backmeup_${OSNAME}_${GOARCH}${EXT}"
+  go build -o "backmeup_${OSNAME}_${GIMME_ARCH}${EXT}" . && upx "backmeup_${OSNAME}_${GIMME_ARCH}${EXT}"
 
 notifications:
   email: false
