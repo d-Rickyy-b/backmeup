@@ -1,0 +1,50 @@
+language: go
+sudo: required
+
+go: "1.13.5"
+
+# Strip debug symbols https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/
+gobuild_args: -ldflags="-s -w"
+
+jobs:
+  include:
+    # Config for building the linux x64 binary
+    - os: linux
+      env:
+        - OSNAME=linux
+        - GOOS=linux
+        - GOARCH=amd64
+    # Config for building the windows x64 binary
+    - os: linux
+      env:
+        - OSNAME=windows
+        - GOOS=windows
+        - GOARCH=amd64
+        - EXT=.exe
+    # Config for building the macos x64 binary
+    - os: linux
+      env:
+        - OSNAME=macos
+        - GOOS=darwin
+        - GOARCH=amd64
+
+
+before_script: sudo apt-get -y install upx
+
+script:
+  go build . -o backmeup_$OSNAME_$GOARCH$EXT && upx backmeup_$OSNAME_$GOARCH$EXT
+
+notifications:
+  email: false
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ""
+  file_glob: true
+  file: "backmeup_*"
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: d-Rickyy-b/backmeup
+    tags: true
