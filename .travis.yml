@@ -32,7 +32,7 @@ jobs:
 before_script: sudo apt-get -y install upx
 
 script:
-  go build -o "backmeup_$OSNAME_$GOARCH$EXT" . && upx "backmeup_$OSNAME_$GOARCH$EXT"
+  go build -o "backmeup_${OSNAME}_${GOARCH}${EXT}" . && upx "backmeup_${OSNAME}_${GOARCH}${EXT}"
 
 notifications:
   email: false
