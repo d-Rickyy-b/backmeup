@@ -1,4 +1,6 @@
 # backmeup - a lightweight backup utility for the CLI
+[![Build Status](https://travis-ci.com/d-Rickyy-b/backmeup.svg?branch=master)](https://travis-ci.com/d-Rickyy-b/backmeup)
+
 When managing several servers, you often find yourself in a need of making backups. I searched for tools online that could make it into a painless experience but never found an easy-to-use, lightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
 That's why I created **backmeup**.
 
@@ -13,11 +15,20 @@ That's why I created **backmeup**.
 - Usable from the CLI
 - Multi-platform support
 
+### Limits
+The goal of backmeup is not to replace professional backup tools. It cannot do incremental or differential backups. It doesn't know about any sort of backup strategies.
+Also, it **doesn't** do any kind of deduplciation! Apart from that, currently, there is no way to schedule your backups. 
+To do so, you'd need to make use of external job schedulers, such as [cron](https://en.wikipedia.org/wiki/Cron).
+
+The sole purpose of backmeup is to simplify basic backup functionality previously done via (e.g.) a shell script or manually via tar commands.
+It does that by providing a simple config file and a single executable. 
+If you want your backups to be synced to a remote machine, you must take care of that yourself or use other tools.
+
 # Installation
 
 ## Download precompiled executable
 Under the releases page you'll always find the most recent builds of backmeup as executables for linux, windows and macos (amd64).
-These executables are built with `go build -ldflags="-s -w" .` shrinked with [upx](https://github.com/upx/upx/).
+These executables are built with `go build -ldflags="-s -w" .` and shrinked with [upx](https://github.com/upx/upx/).
 
 In case that's not suitable for you, you can always build the executable from source.
  
