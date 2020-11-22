@@ -23,7 +23,7 @@ jobs:
 before_script: sudo apt-get -y install upx
 
 script:
-  go build -o "backmeup_${OSNAME}_${GIMME_ARCH}${EXT}" . && upx "backmeup_${OSNAME}_${GIMME_ARCH}${EXT}"
+  - 'if [ -n "$TRAVIS_TAG" ]; then go build -o "backmeup_${OSNAME}_${GIMME_ARCH}_${TRAVIS_TAG}${EXT}" . && upx "backmeup_${OSNAME}_${GIMME_ARCH}_${TRAVIS_TAG}${EXT}"; else echo "Not building a tagged commit!" && go build; fi'
 
 notifications:
   email: false
