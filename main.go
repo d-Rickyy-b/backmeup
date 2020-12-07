@@ -209,7 +209,7 @@ func writeZip(backupArchivePath string, filesToBackup []string) {
 
 func writeBackup(filesToBackup []string, backupBasePath string, unitName string, fileExt string, addSubfolder bool) {
 	now := time.Now()
-	timeStamp := now.Format("2006-01-02_03-04")
+	timeStamp := now.Format("2006-01-02_15-04")
 
 	if addSubfolder {
 		newBackupBasePath := filepath.Join(backupBasePath, unitName)
