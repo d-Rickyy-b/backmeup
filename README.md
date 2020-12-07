@@ -17,7 +17,7 @@ That's why I created **backmeup**.
 
 ### Limitations
 The goal of backmeup is not to replace professional backup tools. It cannot do incremental or differential backups. It doesn't know about any sort of backup strategies.
-Also, it **doesn't** do any kind of deduplciation! Apart from that, currently, there is no way to schedule your backups. 
+Also, it **doesn't** do any kind of deduplication! Apart from that, currently, there is no way to schedule your backups. 
 To do so, you'd need to make use of external job schedulers, such as [cron](https://en.wikipedia.org/wiki/Cron).
 
 The sole purpose of backmeup is to simplify basic backup functionality previously done via (e.g.) a shell script or manually via tar commands.
