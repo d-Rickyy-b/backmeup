@@ -112,7 +112,7 @@ The name of your backup is the key at root level. Starting from there you can co
 | destination | string | Yes | | The destination directory, where the backup of this unit will be stored at |
 | excludes | list[strings] | No | `[]` | .gitignore like filters for excluding files or dirs from the backup |
 | archive_type | string | No | `tar.gz` | The type of archive to be used (`tar.gz` or `zip` are valid options) |
-| add_subfolder | boolean | No | `false` | Creates a new subfolder in <destination> for this unit if set to true |
+| add_subfolder | boolean | No | `false` | Creates a new subfolder in `<destination>` for this unit if set to true |
 | enabled | boolean | No | `true` | Switch to disable each unit individually |
 
 Be careful when using quotes in paths. For most strings you don't even need to use quotes at all. When using double quotes (`"`), you must escape backslashes (`\`) when you want to use them as literal characters (such as in Windows paths). 
