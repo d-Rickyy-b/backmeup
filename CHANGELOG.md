@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
+## [0.1.2] - 2020-12-10
+### Fixed
+- Don't return error in filepath.Walk() for excluded files ([94fba5c](https://github.com/d-Rickyy-b/backmeup/commit/94fba5cab11d3dc07b2ef613e81455b2c1c215bc))
+
 ## [0.1.1] - 2020-12-10
 ### Fixed
 - Use 24h format for backup file names ([#8](https://github.com/d-Rickyy-b/backmeup/pull/8))
@@ -23,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2020-11-17
 Initial release! First usable version of backmeup is published as v0.1.0 
 
-[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.1...HEAD
+[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.2
 [0.1.1]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.1
 [0.1.0]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.0
