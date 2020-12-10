@@ -20,6 +20,7 @@ import (
 )
 
 var VERBOSE bool
+var DEBUG bool
 
 type Unit struct {
 	name         string
@@ -121,9 +122,12 @@ func handleExclude(filePath string, excludePattern string) bool {
 		lastIndex := strings.LastIndex(filePath, "/")
 		filePath = filePath[lastIndex+1:]
 	}
-	log.Printf("Test '%s', '%s'", filePath, excludePattern)
 
 	matched, matchErr := doublestar.Match(excludePattern, filePath)
+
+	if matched && DEBUG {
+		log.Printf("Excluding path '%s' because pattern '%s' matched", filePath, excludePattern)
+	}
 
 	if matchErr != nil {
 		log.Println(matchErr)
@@ -412,6 +416,7 @@ func main() {
 	parser.ExitOnHelp(true)
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
 	VERBOSE = *parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
+	DEBUG = *parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
 
 	if err := parser.Parse(os.Args); err != nil {
 		// In case of error print error and print usage
