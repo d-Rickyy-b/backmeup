@@ -167,7 +167,7 @@ func getFiles(sourcePath string, excludes []string) ([]string, error) {
 
 			isExcluded := handleExcludes(path, excludes)
 			if isExcluded {
-				return errors.New("file is excluded")
+				return nil
 			}
 
 			pathsToBackup = append(pathsToBackup, path)
