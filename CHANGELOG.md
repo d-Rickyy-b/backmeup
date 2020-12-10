@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs
 
 ## [0.1.2] - 2020-12-10
+### Added
+- Implement -d/--debug switch to enable debug logging for printing exclude matches ([21a201a](https://github.com/d-Rickyy-b/backmeup/commit/21a201a7fa7013aee2159cd18d4672ada65442b0))
 ### Fixed
 - Don't return error in filepath.Walk() for excluded files ([94fba5c](https://github.com/d-Rickyy-b/backmeup/commit/94fba5cab11d3dc07b2ef613e81455b2c1c215bc))
 
