@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/akamensky/argparse"
+	"github.com/bmatcuk/doublestar/v2"
 	"github.com/cheggaaa/pb/v3"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zip"
@@ -14,6 +15,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -108,6 +110,39 @@ func (config Config) FromYaml(yamlData []byte) (Config, error) {
 	return config, nil
 }
 
+func handleExclude(filePath string, excludePattern string) bool {
+	if excludePattern == "" {
+		return false
+	}
+
+	filePath = filepath.ToSlash(filePath)
+	if !strings.Contains(excludePattern, "/") {
+		// When there is no forward slash in the pattern, we want to match a file
+		lastIndex := strings.LastIndex(filePath, "/")
+		filePath = filePath[lastIndex+1:]
+	}
+	log.Printf("Test '%s', '%s'", filePath, excludePattern)
+
+	matched, matchErr := doublestar.Match(excludePattern, filePath)
+
+	if matchErr != nil {
+		log.Println(matchErr)
+	}
+
+	return matched
+}
+
+func handleExcludes(path string, excludes []string) bool {
+	for _, excludePattern := range excludes {
+		matched := handleExclude(path, excludePattern)
+
+		if matched {
+			return true
+		}
+	}
+	return false
+}
+
 func getFiles(sourcePath string, excludes []string) ([]string, error) {
 	// Returns all file paths recursively within a certain source directory
 	var pathsToBackup []string
@@ -129,20 +164,12 @@ func getFiles(sourcePath string, excludes []string) ([]string, error) {
 			if info.IsDir() {
 				return nil
 			}
-			for _, exclude := range excludes {
-				// TODO improve matching
-				// Currently to match whole directories (e.g. the '.git' directory) we need to add a filter like that:
-				// '*/.git/* which is not what the actual .gitignore filter would look like: /.git
-				matched, matchErr := filepath.Match(exclude, filepath.ToSlash(path))
 
-				if matchErr != nil {
-					log.Println(matchErr)
-				}
-
-				if matched {
-					return matchErr
-				}
+			isExcluded := handleExcludes(path, excludes)
+			if isExcluded {
+				return errors.New("file is excluded")
 			}
+
 			pathsToBackup = append(pathsToBackup, path)
 			return nil
 		})
