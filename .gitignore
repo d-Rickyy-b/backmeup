@@ -26,3 +26,6 @@
 
 # Exclude actual config - we got the config.sample.yml for this
 config.yml
+
+# Exclude compiled binaries
+backmeup_*-*
