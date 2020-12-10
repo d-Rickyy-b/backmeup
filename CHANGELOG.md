@@ -11,8 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
+## [0.1.1] - 2020-12-10
+### Fixed
+- Use 24h format for backup file names ([#8](https://github.com/d-Rickyy-b/backmeup/pull/8))
+- Use proper file globbing for matching excludes ([0b25309](https://github.com/d-Rickyy-b/backmeup/commit/0b2530989232f7082f14e79f1036cb8f7ee6053c))
+### Docs
+- Document limitations in README ([9f33d9a](https://github.com/d-Rickyy-b/backmeup/commit/9f33d9adaa81c90ddd5b9b166ac61cee46317175), [8bac46a](https://github.com/d-Rickyy-b/backmeup/commit/8bac46ac6272f29e2b8b3555fcbae36619732d5c))
+- Several fixes in README ([01951dc](https://github.com/d-Rickyy-b/backmeup/commit/01951dc4273ab968d616d839d7b66fdee6d69371), [0cbf045](https://github.com/d-Rickyy-b/backmeup/commit/0cbf045898889e808d462dfd0452b6a9d2715579))
+
+
 ## [0.1.0] - 2020-11-17
 Initial release! First usable version of backmeup is published as v0.1.0 
 
-[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.1
 [0.1.0]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.0
