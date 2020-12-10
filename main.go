@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-var verbose bool
+var VERBOSE bool
 
 type Unit struct {
 	name         string
@@ -411,7 +411,7 @@ func main() {
 	parser := argparse.NewParser("backmeup", "The lightweight backup tool for the CLI")
 	parser.ExitOnHelp(true)
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
-	verbose = *parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
+	VERBOSE = *parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
 
 	if err := parser.Parse(os.Args); err != nil {
 		// In case of error print error and print usage
