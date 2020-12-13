@@ -171,6 +171,9 @@ func getFiles(sourcePath string, excludes []string) ([]string, error) {
 
 			isExcluded := handleExcludes(path, excludes)
 			if isExcluded {
+				if info.IsDir() {
+					return filepath.SkipDir
+				}
 				return nil
 			}
 
