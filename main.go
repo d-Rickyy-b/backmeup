@@ -283,6 +283,7 @@ func backupUnit(unit Unit) {
 	}
 
 	log.Printf("Creating backup for unit '%s'\n", unit.name)
+	start := time.Now()
 	var filesToBackup []string
 
 	// Check all source files from the disk in the specified source directories
@@ -300,6 +301,7 @@ func backupUnit(unit Unit) {
 		return
 	}
 	writeBackup(filesToBackup, unit.destination, unit.name, unit.archiveType, unit.addSubfolder)
+	log.Printf("Creating backup took %.2f seconds", time.Since(start).Seconds())
 }
 
 func runBackup(config Config, onlyUnit string) {
