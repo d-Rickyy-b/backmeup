@@ -302,10 +302,24 @@ func backupUnit(unit Unit) {
 	writeBackup(filesToBackup, unit.destination, unit.name, unit.archiveType, unit.addSubfolder)
 }
 
-func runBackup(config Config) {
+func runBackup(config Config, onlyUnit string) {
 	// Start the backup(s) defined in the config object
+	backupCounter := 0
+	if onlyUnit != "" {
+		log.Printf("Only running backup for unit '%s'", onlyUnit)
+	}
+
 	for _, unit := range config.units {
+		if onlyUnit != "" && unit.name != onlyUnit {
+			log.Printf("Skipping unit '%s' because it wasn't specified via -c!", unit.name)
+			continue
+		}
 		backupUnit(unit)
+		backupCounter++
+	}
+
+	if backupCounter == 0 {
+		log.Fatalf("Unit '%s' doesn't exist in config! No backup created!", onlyUnit)
 	}
 }
 
@@ -418,6 +432,7 @@ func main() {
 	parser := argparse.NewParser("backmeup", "The lightweight backup tool for the CLI")
 	parser.ExitOnHelp(true)
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
+	unit := parser.String("u", "unit", &argparse.Options{Required: false, Help: "A single backup unit defined in the config file, that should be run", Default: ""})
 	VERBOSE = *parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
 	DEBUG = *parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
 
@@ -435,5 +450,5 @@ func main() {
 	}
 
 	log.Println("Starting backup...")
-	runBackup(conf)
+	runBackup(conf, unit)
 }
