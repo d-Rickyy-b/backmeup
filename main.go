@@ -434,7 +434,7 @@ func main() {
 	parser := argparse.NewParser("backmeup", "The lightweight backup tool for the CLI")
 	parser.ExitOnHelp(true)
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
-	unit := parser.String("u", "unit", &argparse.Options{Required: false, Help: "A single backup unit defined in the config file, that should be run", Default: ""})
+	unit := *parser.String("u", "unit", &argparse.Options{Required: false, Help: "A single backup unit defined in the config file, that should be run", Default: ""})
 	VERBOSE = *parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
 	DEBUG = *parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
 
