@@ -1,5 +1,5 @@
 # backmeup - a lightweight backup utility for the CLI
-![build](https://github.com/d-Rickyy-b/backmeup/workflows/build/badge.svg)
+[![build](https://github.com/d-Rickyy-b/backmeup/workflows/build/badge.svg)](https://github.com/d-Rickyy-b/backmeup/actions?query=workflow%3Abuild)
 
 When managing several servers, you often find yourself in a need of making backups. I searched for tools online that could make it into a painless experience but never found an easy-to-use, lightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
 That's why I created **backmeup**.
