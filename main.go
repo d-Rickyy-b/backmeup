@@ -137,6 +137,7 @@ func handleExclude(filePath string, excludePattern string) bool {
 }
 
 func handleExcludes(path string, excludes []string) bool {
+	// Checks if the path is excluded by any of the given exclude patterns
 	for _, excludePattern := range excludes {
 		matched := handleExclude(path, excludePattern)
 
@@ -280,10 +281,22 @@ func backupUnit(unit Unit) {
 	}
 
 	log.Printf("Creating backup for unit '%s'\n", unit.name)
-	var filesToBackup []string
+	var filesToBackup []BackupFileMetadata
+	var processedSources []string
 
 	// Check all source files from the disk in the specified source directories
 	for _, sourcePath := range unit.sources {
+		sourcePath = filepath.Clean(sourcePath)
+
+		// Prevent duplicate source paths
+		for _, processedPath := range processedSources {
+			if sourcePath == processedPath {
+				log.Printf("Found duplicate source path '%s'. Skipping!", sourcePath)
+				continue
+			}
+		}
+		processedSources = append(processedSources, sourcePath)
+
 		files, err := getFiles(sourcePath, unit.excludes)
 		if err != nil {
 			log.Printf("Error for unit '%s' while reading directory '%s'! Skipping!", unit.name, sourcePath)
