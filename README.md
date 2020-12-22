@@ -114,6 +114,7 @@ The name of your backup is the key at root level. Starting from there you can co
 | archive_type | string | No | `tar.gz` | The type of archive to be used (`tar.gz` or `zip` are valid options) |
 | add_subfolder | boolean | No | `false` | Creates a new subfolder in `<destination>` for this unit if set to true |
 | enabled | boolean | No | `true` | Switch to disable each unit individually |
+| use_absolute_paths | boolean | No | `true` | Uses absolute file paths in the archive (see [#11](https://github.com/d-Rickyy-b/backmeup/issues/11)) |
 
 Be careful when using quotes in paths. For most strings you don't even need to use quotes at all. When using double quotes (`"`), you must escape backslashes (`\`) when you want to use them as literal characters (such as in Windows paths). 
 Check [this handy article](https://www.yaml.info/learn/quote.html) for learning more about quotes in yaml.
