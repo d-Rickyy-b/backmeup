@@ -23,17 +23,23 @@ var VERBOSE bool
 var DEBUG bool
 
 type Unit struct {
-	name         string
-	sources      []string
-	destination  string
-	excludes     []string
-	archiveType  string
-	addSubfolder bool
-	enabled      bool
+	name             string
+	sources          []string
+	destination      string
+	excludes         []string
+	archiveType      string
+	addSubfolder     bool
+	enabled          bool
+	useAbsolutePaths bool
 }
 
 type Config struct {
 	units []Unit
+}
+
+type BackupFileMetadata struct {
+	path           string
+	backupBasePath string
 }
 
 func (config Config) FromYaml(yamlData []byte) (Config, error) {
@@ -42,12 +48,13 @@ func (config Config) FromYaml(yamlData []byte) (Config, error) {
 
 	// Helper struct for parsing the yaml
 	type YamlUnit struct {
-		Sources      *[]string `yaml:"sources"`
-		Destination  *string   `yaml:"destination"`
-		Excludes     *[]string `yaml:"excludes"`
-		ArchiveType  *string   `yaml:"archive_type"`
-		AddSubfolder *bool     `yaml:"add_subfolder"`
-		Enabled      *bool     `yaml:"enabled"`
+		Sources          *[]string `yaml:"sources"`
+		Destination      *string   `yaml:"destination"`
+		Excludes         *[]string `yaml:"excludes"`
+		ArchiveType      *string   `yaml:"archive_type"`
+		AddSubfolder     *bool     `yaml:"add_subfolder"`
+		Enabled          *bool     `yaml:"enabled"`
+		UseAbsolutePaths *bool     `yaml:"use_absolute_paths"`
 	}
 
 	// Sample yaml config:
@@ -95,6 +102,11 @@ func (config Config) FromYaml(yamlData []byte) (Config, error) {
 		unit.excludes = []string{}
 		if yamlUnit.Excludes != nil {
 			unit.excludes = *yamlUnit.Excludes
+		}
+
+		unit.useAbsolutePaths = true
+		if yamlUnit.UseAbsolutePaths != nil {
+			unit.useAbsolutePaths = *yamlUnit.UseAbsolutePaths
 		}
 
 		if yamlUnit.Sources == nil || yamlUnit.Destination == nil {
@@ -148,9 +160,9 @@ func handleExcludes(path string, excludes []string) bool {
 	return false
 }
 
-func getFiles(sourcePath string, excludes []string) ([]string, error) {
+func getFiles(sourcePath string, excludes []string) ([]BackupFileMetadata, error) {
 	// Returns all file paths recursively within a certain source directory
-	var pathsToBackup []string
+	var pathsToBackup []BackupFileMetadata
 
 	_, statErr := os.Stat(sourcePath)
 	if statErr != nil {
@@ -175,7 +187,11 @@ func getFiles(sourcePath string, excludes []string) ([]string, error) {
 				return nil
 			}
 
-			pathsToBackup = append(pathsToBackup, path)
+			fileMetadata := BackupFileMetadata{
+				path:           path,
+				backupBasePath: sourcePath,
+			}
+			pathsToBackup = append(pathsToBackup, fileMetadata)
 			return nil
 		})
 	if err != nil {
@@ -201,21 +217,53 @@ func validatePath(path string, mustBeDir bool) bool {
 	return true
 }
 
-func writeTar(backupArchivePath string, filesToBackup []string) {
-	file, err := os.Create(backupArchivePath)
+func getPathInArchive(filePath string, backupBasePath string, unit Unit) string {
+	// Remove the base path from the file path within the archive, if option is set
+	pathInArchive := filePath
+	if !unit.useAbsolutePaths {
+		parentBasePath := filepath.Dir(backupBasePath)
+		pathInArchive = strings.ReplaceAll(filePath, parentBasePath, "")
+
+		if strings.HasPrefix(pathInArchive, "\\") {
+			pathInArchive = pathInArchive[1:]
+		}
+	}
+	return pathInArchive
+}
+
+func writeArchive(backupArchivePath string, filesToBackup []BackupFileMetadata, unit Unit) {
+	archiveFile, err := os.Create(backupArchivePath)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer file.Close()
-	// set up the gzip writer
-	gw := gzip.NewWriter(file)
+	defer archiveFile.Close()
+
+	switch unit.archiveType {
+	case "tar.gz":
+		writeTar(archiveFile, filesToBackup, unit)
+	case "zip":
+		writeZip(archiveFile, filesToBackup, unit)
+	default:
+		log.Fatalf("Can't handle archive type '%s'", unit.archiveType)
+	}
+}
+
+func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit Unit) {
+	// set up the gzip and tar writer
+	gw := gzip.NewWriter(archiveFile)
 	defer gw.Close()
 	tw := tar.NewWriter(gw)
 	defer tw.Close()
 
+	// Init progress bar
 	bar := pb.StartNew(len(filesToBackup))
 	for i := range filesToBackup {
-		if err := addFileToTar(tw, filesToBackup[i]); err != nil {
+		fileMetadata := filesToBackup[i]
+		filePath := fileMetadata.path
+
+		pathInArchive := getPathInArchive(filePath, fileMetadata.backupBasePath, unit)
+
+		if err := addFileToTar(tw, filePath, pathInArchive); err != nil {
 			log.Fatalln(err)
 		}
 		bar.Increment()
@@ -223,28 +271,32 @@ func writeTar(backupArchivePath string, filesToBackup []string) {
 	bar.Finish()
 }
 
-func writeZip(backupArchivePath string, filesToBackup []string) {
-	file, err := os.Create(backupArchivePath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer file.Close()
-	zw := zip.NewWriter(file)
+func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit Unit) {
+	zw := zip.NewWriter(archiveFile)
 	defer zw.Close()
 
+	bar := pb.StartNew(len(filesToBackup))
 	for i := range filesToBackup {
-		if err := addFileToZip(zw, filesToBackup[i]); err != nil {
+		fileMetadata := filesToBackup[i]
+		filePath := fileMetadata.path
+
+		pathInArchive := getPathInArchive(filePath, fileMetadata.backupBasePath, unit)
+
+		if err := addFileToZip(zw, filePath, pathInArchive); err != nil {
 			log.Fatalln(err)
 		}
+		bar.Increment()
 	}
+	bar.Finish()
 }
 
-func writeBackup(filesToBackup []string, backupBasePath string, unitName string, fileExt string, addSubfolder bool) {
+func writeBackup(filesToBackup []BackupFileMetadata, unit Unit) {
 	now := time.Now()
 	timeStamp := now.Format("2006-01-02_15-04")
+	backupBasePath := unit.destination
 
-	if addSubfolder {
-		newBackupBasePath := filepath.Join(backupBasePath, unitName)
+	if unit.addSubfolder {
+		newBackupBasePath := filepath.Join(unit.destination, unit.name)
 		pathExists := validatePath(newBackupBasePath, true)
 
 		if !pathExists {
@@ -257,19 +309,12 @@ func writeBackup(filesToBackup []string, backupBasePath string, unitName string,
 		backupBasePath = newBackupBasePath
 	}
 
-	backupArchiveName := unitName + "-" + timeStamp + "." + fileExt
+	backupArchiveName := unit.name + "-" + timeStamp + "." + unit.archiveType
 	backupArchivePath := filepath.Join(backupBasePath, backupArchiveName)
 
 	// TODO check if archive already exists. If yes, append -1 to it and try again
 
-	if fileExt == "tar.gz" {
-		writeTar(backupArchivePath, filesToBackup)
-	} else if fileExt == "zip" {
-		writeZip(backupArchivePath, filesToBackup)
-	} else {
-		log.Fatalf("Can't handle archive type '%s'", fileExt)
-	}
-
+	writeArchive(backupArchivePath, filesToBackup, unit)
 	log.Printf("Archive created successfully at '%s'", backupArchivePath)
 }
 
@@ -309,7 +354,7 @@ func backupUnit(unit Unit) {
 		log.Printf("No files found for sources in unit '%s'. Creating no backup!", unit.name)
 		return
 	}
-	writeBackup(filesToBackup, unit.destination, unit.name, unit.archiveType, unit.addSubfolder)
+	writeBackup(filesToBackup, unit)
 }
 
 func runBackup(config Config) {
@@ -369,7 +414,7 @@ func readConfig(configPath string) (Config, error) {
 	return c, validateErr
 }
 
-func addFileToTar(tw *tar.Writer, path string) error {
+func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -380,7 +425,7 @@ func addFileToTar(tw *tar.Writer, path string) error {
 		// now lets create the header as needed for this file within the tarball
 		header := new(tar.Header)
 		header.Format = tar.FormatGNU
-		header.Name = path
+		header.Name = pathInArchive
 		header.Size = stat.Size()
 		header.Mode = int64(stat.Mode())
 		header.ModTime = stat.ModTime()
@@ -396,7 +441,7 @@ func addFileToTar(tw *tar.Writer, path string) error {
 	return nil
 }
 
-func addFileToZip(zw *zip.Writer, path string) error {
+func addFileToZip(zw *zip.Writer, path string, pathInArchive string) error {
 	file, err := os.Open(path)
 	if err != nil {
 		return err
@@ -408,7 +453,7 @@ func addFileToZip(zw *zip.Writer, path string) error {
 		if headerErr != nil {
 			return headerErr
 		}
-		header.Name = path
+		header.Name = pathInArchive
 		// write the header to the zip archive
 		writer, headerErr := zw.CreateHeader(header)
 		if headerErr != nil {
