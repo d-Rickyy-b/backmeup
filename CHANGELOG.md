@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
+## [0.1.3] - 2020-12-22
+### Added
+- Ability to generate an archive with relative paths ([#13](https://github.com/d-Rickyy-b/backmeup/pull/13))
+### Fixed
+- Add check for duplicate source paths([#14](https://github.com/d-Rickyy-b/backmeup/pull/14))
+
 ## [0.1.2] - 2020-12-10
 ### Added
 - Implement -d/--debug switch to enable debug logging for printing exclude matches ([21a201a](https://github.com/d-Rickyy-b/backmeup/commit/21a201a7fa7013aee2159cd18d4672ada65442b0))
@@ -29,7 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2020-11-17
 Initial release! First usable version of backmeup is published as v0.1.0 
 
-[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.3
 [0.1.2]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.2
 [0.1.1]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.1
 [0.1.0]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.0
