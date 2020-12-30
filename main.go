@@ -42,10 +42,10 @@ func handleExclude(filePath string, excludePattern string) bool {
 	return matched
 }
 
-func handleExcludes(path string, excludes []string) bool {
+func handleExcludes(filePath string, excludePatterns []string) bool {
 	// Checks if the path is excluded by any of the given exclude patterns
-	for _, excludePattern := range excludes {
-		matched := handleExclude(path, excludePattern)
+	for _, excludePattern := range excludePatterns {
+		matched := handleExclude(filePath, excludePattern)
 
 		if matched {
 			return true
