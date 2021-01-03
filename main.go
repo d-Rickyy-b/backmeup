@@ -207,8 +207,8 @@ func main() {
 	parser := argparse.NewParser("backmeup", "The lightweight backup tool for the CLI")
 	parser.ExitOnHelp(true)
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
-	VERBOSE = *parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
-	DEBUG = *parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
+	verbose := parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
+	debug := parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
 
 	if err := parser.Parse(os.Args); err != nil {
 		// In case of error print error and print usage
@@ -216,6 +216,10 @@ func main() {
 		fmt.Print(parser.Usage(err))
 		os.Exit(1)
 	}
+
+	// We didn't get the true values of the arguments before calling parser.Parse()
+	VERBOSE = *verbose
+	DEBUG = *debug
 
 	conf, err := config.ReadConfig(*configPath)
 	if err != nil {
