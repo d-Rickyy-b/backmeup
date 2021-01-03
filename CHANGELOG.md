@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
+## [0.1.4]
+### Changed
+- Move archive code to archiver package ([d8666cb](https://github.com/d-Rickyy-b/backmeup/commit/d8666cb5d3acc25a77f3d84f92c52301687dd6ae))
+- Move config code to config package ([]())
+
 ## [0.1.3] - 2020-12-22
 ### Added
 - Ability to generate an archive with relative paths ([#13](https://github.com/d-Rickyy-b/backmeup/pull/13))
@@ -35,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2020-11-17
 Initial release! First usable version of backmeup is published as v0.1.0 
 
-[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.3...HEAD
+[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.4
 [0.1.3]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.3
 [0.1.2]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.2
 [0.1.1]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.1
