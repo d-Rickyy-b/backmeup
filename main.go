@@ -433,9 +433,14 @@ func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
 		if err := tw.WriteHeader(header); err != nil {
 			return err
 		}
-		// copy the file data to the tarball
-		if _, err := io.Copy(tw, file); err != nil {
-			return err
+
+		// Check for regular files
+		if header.Typeflag == tar.TypeReg {
+			// copy the file data to the tarball
+			_, err := io.Copy(tw, file)
+			if err != nil {
+				return fmt.Errorf("%s: copying contents: %w", file.Name(), err)
+			}
 		}
 	}
 	return nil
