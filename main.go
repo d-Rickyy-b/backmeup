@@ -421,7 +421,18 @@ func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
 	}
 	defer file.Close()
 
-	if stat, err := file.Stat(); err == nil {
+	if stat, err := os.Lstat(path); err == nil {
+		var linkTarget string
+		// Check if file is symlink
+		if stat.Mode()&os.ModeSymlink != 0 {
+			log.Printf("Found link: %s", path)
+			var err error
+			linkTarget, err = os.Readlink(path)
+			if err != nil {
+				return fmt.Errorf("%s: readlink: %v", stat.Name(), err)
+			}
+		}
+
 		// now lets create the header as needed for this file within the tarball
 		header, err := tar.FileInfoHeader(stat, filepath.ToSlash(linkTarget))
 		if err != nil {
