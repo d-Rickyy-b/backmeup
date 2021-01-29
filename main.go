@@ -423,12 +423,12 @@ func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
 
 	if stat, err := file.Stat(); err == nil {
 		// now lets create the header as needed for this file within the tarball
-		header := new(tar.Header)
-		header.Format = tar.FormatGNU
+		header, err := tar.FileInfoHeader(stat, filepath.ToSlash(linkTarget))
+		if err != nil {
+			return nil
+		}
 		header.Name = pathInArchive
-		header.Size = stat.Size()
-		header.Mode = int64(stat.Mode())
-		header.ModTime = stat.ModTime()
+
 		// write the header to the tarball archive
 		if err := tw.WriteHeader(header); err != nil {
 			return err
