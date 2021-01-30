@@ -12,9 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs
 
 ## [0.1.4]
+### Added
+- Symlink support for tar files ([5d75752](https://github.com/d-Rickyy-b/backmeup/commit/5d757525bbde26429e90a30ea5fba8d721db6f72))
 ### Changed
 - Move archive code to archiver package ([d8666cb](https://github.com/d-Rickyy-b/backmeup/commit/d8666cb5d3acc25a77f3d84f92c52301687dd6ae))
-- Move config code to config package ([]())
+- Move config code to config package ([0a03807](https://github.com/d-Rickyy-b/backmeup/commit/0a038077a21c88781abf77b85a6a9da7b60df9f6))
+### Fixed
+- Add compression for zip files ([52733bc](https://github.com/d-Rickyy-b/backmeup/commit/52733bc0dc4e1378e02467c3712ffe05b6cb3fd2))
+- Replace Fatalln with Println ([721f6b2](https://github.com/d-Rickyy-b/backmeup/commit/721f6b27d1501b403d94f1273639a7a1a92b8b76))
+- Correctly assign 'verbose' and 'debug' variables ([cd11006](https://github.com/d-Rickyy-b/backmeup/commit/cd110062d8f619ead0f63b4a663c3a46aedbd228))
+- Only store regular files in tar archives ([d9b26fc](https://github.com/d-Rickyy-b/backmeup/commit/d9b26fc5d0b465bebec05454fecbe4b5b14538b9))
 
 ## [0.1.3] - 2020-12-22
 ### Added
@@ -41,8 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial release! First usable version of backmeup is published as v0.1.0 
 
 [unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.4...HEAD
-[0.1.4]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.4
-[0.1.3]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.3
-[0.1.2]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.2
-[0.1.1]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.1
+[0.1.4]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/d-Rickyy-b/backmeup/tree/v0.1.0
