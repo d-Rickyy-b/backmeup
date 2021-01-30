@@ -3,6 +3,7 @@ package archiver
 import (
 	"archive/tar"
 	"backmeup/config"
+	"fmt"
 	"github.com/cheggaaa/pb/v3"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zip"
@@ -67,7 +68,7 @@ func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath, unit)
 
 		if err := addFileToTar(tw, filePath, pathInArchive); err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		bar.Increment()
@@ -89,7 +90,7 @@ func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath, unit)
 
 		if err := addFileToZip(zw, filePath, pathInArchive); err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		bar.Increment()
@@ -105,21 +106,37 @@ func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
 	}
 	defer file.Close()
 
-	if stat, err := file.Stat(); err == nil {
+	if stat, err := os.Lstat(path); err == nil {
+		var linkTarget string
+		// Check if file is symlink
+		if stat.Mode()&os.ModeSymlink != 0 {
+			log.Printf("Found link: %s", path)
+			var err error
+			linkTarget, err = os.Readlink(path)
+			if err != nil {
+				return fmt.Errorf("%s: readlink: %v", stat.Name(), err)
+			}
+		}
+
 		// now lets create the header as needed for this file within the tarball
-		header := new(tar.Header)
-		header.Format = tar.FormatGNU
+		header, err := tar.FileInfoHeader(stat, filepath.ToSlash(linkTarget))
+		if err != nil {
+			return nil
+		}
 		header.Name = pathInArchive
-		header.Size = stat.Size()
-		header.Mode = int64(stat.Mode())
-		header.ModTime = stat.ModTime()
+
 		// write the header to the tarball archiver
 		if err := tw.WriteHeader(header); err != nil {
 			return err
 		}
-		// copy the file data to the tarball
-		if _, err := io.Copy(tw, file); err != nil {
-			return err
+
+		// Check for regular files
+		if header.Typeflag == tar.TypeReg {
+			// copy the file data to the tarball
+			_, err := io.Copy(tw, file)
+			if err != nil {
+				return fmt.Errorf("%s: copying contents: %w", file.Name(), err)
+			}
 		}
 	}
 
@@ -139,6 +156,7 @@ func addFileToZip(zw *zip.Writer, path string, pathInArchive string) error {
 			return headerErr
 		}
 
+		header.Method = zip.Deflate
 		header.Name = pathInArchive
 		// write the header to the zip archiver
 		writer, headerErr := zw.CreateHeader(header)
