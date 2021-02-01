@@ -9,12 +9,18 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
 
 var VERBOSE bool
 var DEBUG bool
+
+var (
+	version = "dev"
+	date    = "unknown"
+)
 
 func handleExclude(filePath string, excludePattern string) bool {
 	if excludePattern == "" {
@@ -236,11 +242,15 @@ func runBackup(config config.Config, unitNames []string) {
 		log.Printf("No units found with the provided names!")
 	}
 }
+
+func printVersionString() {
+	fmt.Printf("backmeup v%s, os: %s, arch: %s, built on %s\n\n", version, runtime.GOOS, runtime.GOARCH, date)
 }
 
 func main() {
 	parser := argparse.NewParser("backmeup", "The lightweight backup tool for the CLI")
 	parser.ExitOnHelp(true)
+	printVersion := parser.Flag("", "version", &argparse.Options{Required: false, Help: "Print out version", Default: false})
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
 	unitNames := parser.StringList("u", "unit", &argparse.Options{Required: false, Help: "Name of a unit configured in the config file that should be backed up", Default: []string{}})
 	verbose := parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
@@ -249,6 +259,11 @@ func main() {
 	if err := parser.Parse(os.Args); err != nil {
 		// In case of error print error and print usage
 		// This can also be done by passing -h or --help flags
+		if strings.HasSuffix(err.Error(), "is required") && *printVersion {
+			printVersionString()
+			os.Exit(0)
+		}
+
 		fmt.Print(parser.Usage(err))
 		os.Exit(1)
 	}
@@ -257,6 +272,13 @@ func main() {
 	VERBOSE = *verbose
 	DEBUG = *debug
 
+	// When the --version argument is passed, print the full version string and exit
+	if *printVersion {
+		printVersionString()
+		os.Exit(0)
+	}
+
+	printVersionString()
 	conf, err := config.ReadConfig(*configPath)
 	if err != nil {
 		log.Println("Error while parsing yaml config!")
