@@ -59,7 +59,9 @@ func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 	defer tw.Close()
 
 	// Init progress bar
-	bar := pb.StartNew(len(filesToBackup))
+	bar := pb.New(len(filesToBackup))
+	bar.SetMaxWidth(100)
+	bar.Start()
 
 	for i := range filesToBackup {
 		fileMetadata := filesToBackup[i]
@@ -81,7 +83,9 @@ func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 	zw := zip.NewWriter(archiveFile)
 	defer zw.Close()
 
-	bar := pb.StartNew(len(filesToBackup))
+	bar := pb.New(len(filesToBackup))
+	bar.SetMaxWidth(100)
+	bar.Start()
 
 	for i := range filesToBackup {
 		fileMetadata := filesToBackup[i]
