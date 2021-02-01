@@ -196,17 +196,53 @@ func backupUnit(unit config.Unit) {
 	writeBackup(filesToBackup, unit)
 }
 
-func runBackup(config config.Config) {
+func isUnitInList(unit config.Unit, unitNames []string) bool {
+	for _, unitName := range unitNames {
+		if unit.Name == unitName {
+			return true
+		}
+	}
+
+	return false
+}
+
+func runBackup(config config.Config, unitNames []string) {
 	// Start the backup(s) defined in the config object
+	unitCounter := 0
+	onlySpecifiedUnits := len(unitNames) > 0
+
+	if onlySpecifiedUnits {
+		log.Printf("Argument -u provided! Only running backups for given units: %s!", strings.Join(unitNames, ", "))
+	}
+
 	for _, unit := range config.Units {
+		// if unitNames contains no elements, no -u argument was provided
+		if onlySpecifiedUnits {
+			// Check if the unit's name is contained in the passed unitNames list
+			if !isUnitInList(unit, unitNames) {
+				// if not contained, the user doesn't want this unit getting backed up, so we continue
+				log.Printf("Skipping backup for unit '%s', because its name wasn't provided as -u argument", unit.Name)
+
+				continue
+			} else {
+				unitCounter++
+			}
+		}
+
 		backupUnit(unit)
 	}
+
+	if onlySpecifiedUnits && unitCounter == 0 {
+		log.Printf("No units found with the provided names!")
+	}
+}
 }
 
 func main() {
 	parser := argparse.NewParser("backmeup", "The lightweight backup tool for the CLI")
 	parser.ExitOnHelp(true)
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
+	unitNames := parser.StringList("u", "unit", &argparse.Options{Required: false, Help: "Name of a unit configured in the config file that should be backed up", Default: []string{}})
 	verbose := parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
 	debug := parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
 
@@ -228,5 +264,5 @@ func main() {
 	}
 
 	log.Println("Starting backup...")
-	runBackup(conf)
+	runBackup(conf, *unitNames)
 }
