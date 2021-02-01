@@ -1,3 +1,4 @@
+![backmeup logo](https://raw.githubusercontent.com/d-Rickyy-b/backmeup/master/docs/backmeup_logo_transparent.png)
 # backmeup - a lightweight backup utility for the CLI
 [![build](https://github.com/d-Rickyy-b/backmeup/workflows/build/badge.svg)](https://github.com/d-Rickyy-b/backmeup/actions?query=workflow%3Abuild)
 
