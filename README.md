@@ -9,7 +9,7 @@ That's why I created **backmeup**.
 - Easy to use
 - Define multiple backups in a single config file
 - **Portable** - you can copy the **single executable** with a configuration file on all your machines
-- **Lightweight** - the executables are ~1 mb
+- **Lightweight** - the executables are < 10 mb
 - Exclude files and paths with .gitignore-like syntax
 - Group together multiple source paths into one backup
 - Config files written in yaml
