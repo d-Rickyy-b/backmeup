@@ -22,6 +22,8 @@ var (
 	date    = "unknown"
 )
 
+// handleExclude checks if a given file path matches a given exclusion pattern
+// It returns true if the pattern matches, otherwise it returns false
 func handleExclude(filePath string, excludePattern string) bool {
 	if excludePattern == "" {
 		return false
@@ -48,6 +50,8 @@ func handleExclude(filePath string, excludePattern string) bool {
 	return matched
 }
 
+// handleExcludes checks if a given file path matches any exclude pattern out of a given list of patterns
+// It returns true if any of the pattern matches, otherwise it returns false
 func handleExcludes(filePath string, excludePatterns []string) bool {
 	// Checks if the path is excluded by any of the given exclude patterns
 	for _, excludePattern := range excludePatterns {
@@ -61,8 +65,8 @@ func handleExcludes(filePath string, excludePatterns []string) bool {
 	return false
 }
 
+// getFiles returns all file paths recursively within a certain source directory
 func getFiles(sourcePath string, excludes []string) ([]archiver.BackupFileMetadata, error) {
-	// Returns all file paths recursively within a certain source directory
 	var pathsToBackup []archiver.BackupFileMetadata
 
 	_, statErr := os.Stat(sourcePath)
@@ -104,8 +108,8 @@ func getFiles(sourcePath string, excludes []string) ([]archiver.BackupFileMetada
 	return pathsToBackup, err
 }
 
+// validatePath checks if a certain file/directory exists
 func validatePath(path string, mustBeDir bool) bool {
-	// Checks if a file/directory exists
 	file, err := os.Stat(path)
 
 	if err != nil {
@@ -123,6 +127,7 @@ func validatePath(path string, mustBeDir bool) bool {
 	return true
 }
 
+// writeBackup writes the files defined by the config into the defined archive format
 func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit) {
 	now := time.Now()
 	timeStamp := now.Format("2006-01-02_15-04")
@@ -153,6 +158,7 @@ func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit) 
 	log.Printf("Archive created successfully at '%s'", backupArchivePath)
 }
 
+// backupUnit runs the backup for a given unit defined in the given config.yml
 func backupUnit(unit config.Unit) {
 	// Start backup for a single unit. Each backup creates a single archive file
 	if !unit.Enabled {
@@ -202,6 +208,7 @@ func backupUnit(unit config.Unit) {
 	writeBackup(filesToBackup, unit)
 }
 
+// isUnitInList checks if the name of a unit is in a given string slice
 func isUnitInList(unit config.Unit, unitNames []string) bool {
 	for _, unitName := range unitNames {
 		if unit.Name == unitName {
@@ -212,8 +219,8 @@ func isUnitInList(unit config.Unit, unitNames []string) bool {
 	return false
 }
 
+// runBackup runs all the enabled backups defined in the given config.yml file
 func runBackup(config config.Config, unitNames []string) {
-	// Start the backup(s) defined in the config object
 	unitCounter := 0
 	onlySpecifiedUnits := len(unitNames) > 0
 
@@ -243,6 +250,7 @@ func runBackup(config config.Config, unitNames []string) {
 	}
 }
 
+// printVersionString prints the full version string of backmeup
 func printVersionString() {
 	fmt.Printf("backmeup v%s, os: %s, arch: %s, built on %s\n\n", version, runtime.GOOS, runtime.GOARCH, date)
 }
