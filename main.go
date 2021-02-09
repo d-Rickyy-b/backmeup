@@ -250,6 +250,38 @@ func runBackup(config config.Config, unitNames []string) {
 	}
 }
 
+// testExclusion tests if a given path is excluded by the exclusion patterns given in the config file
+func testExclusion(path string, config config.Config, unitNames []string) {
+	onlySpecifiedUnits := len(unitNames) > 0
+	var testedUnits []string
+	var excludingUnits []string
+
+	// Check all units
+	for _, unit := range config.Units {
+		// If specific units are passed via the `-u` CLI parameter, only check those and skip others
+		if onlySpecifiedUnits {
+			if !isUnitInList(unit, unitNames) {
+				log.Printf("Skipping path exclusion test for unit '%s', because its name wasn't provided as -u argument", unit.Name)
+				continue
+			}
+		}
+
+		testedUnits = append(testedUnits, unit.Name)
+		isExcluded := handleExcludes(path, unit.Excludes)
+		if isExcluded {
+			excludingUnits = append(excludingUnits, unit.Name)
+		}
+	}
+	log.Printf("Tested excludes for units: %v", strings.Join(testedUnits, ", "))
+
+	if len(excludingUnits) > 0 {
+		log.Printf("The path is excluded by these units: %s", strings.Join(excludingUnits, ", "))
+	} else {
+		log.Printf("Path is not excluded by any of the tested units!")
+	}
+
+}
+
 // printVersionString prints the full version string of backmeup
 func printVersionString() {
 	fmt.Printf("backmeup v%s, os: %s, arch: %s, built on %s\n\n", version, runtime.GOOS, runtime.GOARCH, date)
@@ -261,6 +293,7 @@ func main() {
 	printVersion := parser.Flag("", "version", &argparse.Options{Required: false, Help: "Print out version", Default: false})
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
 	unitNames := parser.StringList("u", "unit", &argparse.Options{Required: false, Help: "Name of a unit configured in the config file that should be backed up", Default: []string{}})
+	testPath := parser.String("t", "test-path", &argparse.Options{Required: false, Help: "A path to test against the exclude filters defined in the config", Default: ""})
 	verbose := parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
 	debug := parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
 
@@ -291,6 +324,11 @@ func main() {
 	if err != nil {
 		log.Println("Error while parsing yaml config!")
 		os.Exit(1)
+	}
+
+	if *testPath != "" {
+		testExclusion(*testPath, conf, *unitNames)
+		os.Exit(0)
 	}
 
 	log.Println("Starting backup...")
