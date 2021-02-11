@@ -66,7 +66,7 @@ func handleExcludes(filePath string, excludePatterns []string) bool {
 }
 
 // getFiles returns all file paths recursively within a certain source directory
-func getFiles(sourcePath string, excludes []string) ([]archiver.BackupFileMetadata, error) {
+func getFiles(sourcePath string, unit config.Unit) ([]archiver.BackupFileMetadata, error) {
 	var pathsToBackup []archiver.BackupFileMetadata
 
 	_, statErr := os.Stat(sourcePath)
@@ -88,7 +88,7 @@ func getFiles(sourcePath string, excludes []string) ([]archiver.BackupFileMetada
 				return nil
 			}
 
-			isExcluded := handleExcludes(path, excludes)
+			isExcluded := handleExcludes(path, unit.Excludes)
 			if isExcluded {
 				return nil
 			}
@@ -189,7 +189,7 @@ func backupUnit(unit config.Unit) {
 
 		processedSources = append(processedSources, sourcePath)
 
-		files, err := getFiles(sourcePath, unit.Excludes)
+		files, err := getFiles(sourcePath, unit)
 		if err != nil {
 			log.Printf("Error for unit '%s' while reading directory '%s'! Skipping!", unit.Name, sourcePath)
 
