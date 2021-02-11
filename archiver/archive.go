@@ -139,7 +139,7 @@ func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
 		}
 
 		// Check for regular files
-		if header.Typeflag == tar.TypeReg {
+		if stat.Mode().IsRegular() {
 			// copy the file data to the tarball
 			_, err := io.Copy(tw, file)
 			if err != nil {
