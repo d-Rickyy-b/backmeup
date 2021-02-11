@@ -9,6 +9,7 @@ backup_unit_name:
     - "*.rar"
   archive_type: "tar.gz"
   add_subfolder: false
+  follow_symlinks: false
   enabled: true
 
 other_unit:

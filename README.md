@@ -1,14 +1,16 @@
+![backmeup logo](https://raw.githubusercontent.com/d-Rickyy-b/backmeup/master/docs/backmeup_logo_transparent.png)
 # backmeup - a lightweight backup utility for the CLI
 [![build](https://github.com/d-Rickyy-b/backmeup/workflows/build/badge.svg)](https://github.com/d-Rickyy-b/backmeup/actions?query=workflow%3Abuild)
 
-When managing several servers, you often find yourself in a need of making backups. I searched for tools online that could make it into a painless experience but never found an easy-to-use, lightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
+When managing several servers, you often find yourself in a need of making backups.
+I searched for tools online that could make it into a painless experience but never found an easy-to-use, lightweight, portable, CLI tool which is easy to configure and does not need a remote server for backups.
 That's why I created **backmeup**.
 
 ### Key features
 - Easy to use
 - Define multiple backups in a single config file
 - **Portable** - you can copy the **single executable** with a configuration file on all your machines
-- **Lightweight** - the executables are ~1 mb
+- **Lightweight** - the executables are < 10 mb
 - Exclude files and paths with .gitignore-like syntax
 - Group together multiple source paths into one backup
 - Config files written in yaml
@@ -115,6 +117,7 @@ The name of your backup is the key at root level. Starting from there you can co
 | add_subfolder | boolean | No | `false` | Creates a new subfolder in `<destination>` for this unit if set to true |
 | enabled | boolean | No | `true` | Switch to disable each unit individually |
 | use_absolute_paths | boolean | No | `true` | Uses absolute file paths in the archive (see [#11](https://github.com/d-Rickyy-b/backmeup/issues/11)) |
+| follow_symlinks | boolean | No | `false` | If set to `true`, the targets of symlinks (regular files only) will be included in the archive. Only works for tar archives! |
 
 Be careful when using quotes in paths. For most strings you don't even need to use quotes at all. When using double quotes (`"`), you must escape backslashes (`\`) when you want to use them as literal characters (such as in Windows paths). 
 Check [this handy article](https://www.yaml.info/learn/quote.html) for learning more about quotes in yaml.

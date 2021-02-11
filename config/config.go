@@ -17,6 +17,7 @@ type Unit struct {
 	AddSubfolder     bool
 	Enabled          bool
 	UseAbsolutePaths bool
+	FollowSymlinks   bool
 }
 
 type Config struct {
@@ -32,10 +33,11 @@ type yamlUnit struct {
 	AddSubfolder     *bool     `yaml:"add_subfolder"`
 	Enabled          *bool     `yaml:"enabled"`
 	UseAbsolutePaths *bool     `yaml:"use_absolute_paths"`
+	FollowSymlinks   *bool     `yaml:"follow_symlinks"`
 }
 
+// FromYaml creates a config struct from a given yaml file as bytes
 func (config Config) FromYaml(yamlData []byte) (Config, error) {
-	// Create a config object from yaml byte array
 	unitMap := make(map[string]yamlUnit)
 
 	log.Println("Parsing config yaml")
@@ -75,6 +77,11 @@ func (config Config) FromYaml(yamlData []byte) (Config, error) {
 			unit.UseAbsolutePaths = *yamlUnit.UseAbsolutePaths
 		}
 
+		unit.FollowSymlinks = false
+		if yamlUnit.FollowSymlinks != nil {
+			unit.FollowSymlinks = *yamlUnit.FollowSymlinks
+		}
+
 		if yamlUnit.Sources == nil || yamlUnit.Destination == nil {
 			log.Fatalf("Sources or destination can't be parsed for unit '%s'", unitName)
 		} else {
@@ -90,8 +97,9 @@ func (config Config) FromYaml(yamlData []byte) (Config, error) {
 	return config, nil
 }
 
+// validatePath checks if a given file/directory exists
+// It returns true if it exists, otherwise false
 func validatePath(path string, mustBeDir bool) bool {
-	// Checks if a file/directory exists
 	file, err := os.Stat(path)
 
 	if err != nil {
@@ -142,8 +150,8 @@ func (config *Config) validate() error {
 	return nil
 }
 
+// ReadConfig reads a config file from a given path
 func ReadConfig(configPath string) (Config, error) {
-	// Read config file at configPath
 	log.Printf("Trying to read config file '%s'!", configPath)
 	data, err := ioutil.ReadFile(configPath)
 

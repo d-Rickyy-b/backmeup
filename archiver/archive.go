@@ -19,11 +19,13 @@ type BackupFileMetadata struct {
 	BackupBasePath string
 }
 
-func getPathInArchive(filePath string, backupBasePath string, unit config.Unit) string {
+var currentUnitConfig config.Unit
+
+func getPathInArchive(filePath string, backupBasePath string) string {
 	// Remove the base Path from the file Path within the archiver, if option is set
 	pathInArchive := filePath
 
-	if !unit.UseAbsolutePaths {
+	if !currentUnitConfig.UseAbsolutePaths {
 		parentBasePath := filepath.Dir(backupBasePath)
 		pathInArchive = strings.ReplaceAll(filePath, parentBasePath, "")
 
@@ -34,6 +36,8 @@ func getPathInArchive(filePath string, backupBasePath string, unit config.Unit) 
 }
 
 func WriteArchive(backupArchivePath string, filesToBackup []BackupFileMetadata, unit config.Unit) {
+	// Store the current config for other methods to access config parameters
+	currentUnitConfig = unit
 	archiveFile, err := os.Create(backupArchivePath)
 	if err != nil {
 		log.Fatalln(err)
@@ -42,15 +46,15 @@ func WriteArchive(backupArchivePath string, filesToBackup []BackupFileMetadata, 
 
 	switch unit.ArchiveType {
 	case "tar.gz":
-		writeTar(archiveFile, filesToBackup, unit)
+		writeTar(archiveFile, filesToBackup)
 	case "zip":
-		writeZip(archiveFile, filesToBackup, unit)
+		writeZip(archiveFile, filesToBackup)
 	default:
 		log.Fatalf("Can't handle archiver type '%s'", unit.ArchiveType)
 	}
 }
 
-func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit config.Unit) {
+func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 	// set up the gzip and tar writer
 	gw := gzip.NewWriter(archiveFile)
 	defer gw.Close()
@@ -59,13 +63,15 @@ func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 	defer tw.Close()
 
 	// Init progress bar
-	bar := pb.StartNew(len(filesToBackup))
+	bar := pb.New(len(filesToBackup))
+	bar.SetMaxWidth(100)
+	bar.Start()
 
 	for i := range filesToBackup {
 		fileMetadata := filesToBackup[i]
 		filePath := fileMetadata.Path
 
-		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath, unit)
+		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath)
 
 		if err := addFileToTar(tw, filePath, pathInArchive); err != nil {
 			log.Println(err)
@@ -77,17 +83,19 @@ func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 	bar.Finish()
 }
 
-func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit config.Unit) {
+func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 	zw := zip.NewWriter(archiveFile)
 	defer zw.Close()
 
-	bar := pb.StartNew(len(filesToBackup))
+	bar := pb.New(len(filesToBackup))
+	bar.SetMaxWidth(100)
+	bar.Start()
 
 	for i := range filesToBackup {
 		fileMetadata := filesToBackup[i]
 		filePath := fileMetadata.Path
 
-		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath, unit)
+		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath)
 
 		if err := addFileToZip(zw, filePath, pathInArchive); err != nil {
 			log.Println(err)
@@ -100,23 +108,36 @@ func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 }
 
 func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
 	if stat, err := os.Lstat(path); err == nil {
 		var linkTarget string
 		// Check if file is symlink
 		if stat.Mode()&os.ModeSymlink != 0 {
-			log.Printf("Found link: %s", path)
 			var err error
 			linkTarget, err = os.Readlink(path)
 			if err != nil {
 				return fmt.Errorf("%s: readlink: %v", stat.Name(), err)
 			}
+
+			// In case the user wants to follow symlinks we eval the symlink target
+			if currentUnitConfig.FollowSymlinks {
+				if linkTargetPath, err := filepath.EvalSymlinks(path); err == nil {
+					if linkTargetInfo, statErr := os.Stat(linkTargetPath); statErr == nil {
+						if linkTargetInfo.Mode().IsRegular() {
+							// If file is regular, we can simply replace the symlink with the actual file
+							path = linkTargetPath
+							linkTarget = ""
+							stat = linkTargetInfo
+						}
+					}
+				}
+			}
 		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
 
 		// now lets create the header as needed for this file within the tarball
 		header, err := tar.FileInfoHeader(stat, filepath.ToSlash(linkTarget))
@@ -131,7 +152,7 @@ func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
 		}
 
 		// Check for regular files
-		if header.Typeflag == tar.TypeReg {
+		if stat.Mode().IsRegular() {
 			// copy the file data to the tarball
 			_, err := io.Copy(tw, file)
 			if err != nil {
