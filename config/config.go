@@ -17,6 +17,7 @@ type Unit struct {
 	AddSubfolder     bool
 	Enabled          bool
 	UseAbsolutePaths bool
+	FollowSymlinks   bool
 }
 
 type Config struct {
@@ -32,6 +33,7 @@ type yamlUnit struct {
 	AddSubfolder     *bool     `yaml:"add_subfolder"`
 	Enabled          *bool     `yaml:"enabled"`
 	UseAbsolutePaths *bool     `yaml:"use_absolute_paths"`
+	FollowSymlinks   *bool     `yaml:"follow_symlinks"`
 }
 
 func (config Config) FromYaml(yamlData []byte) (Config, error) {
@@ -73,6 +75,11 @@ func (config Config) FromYaml(yamlData []byte) (Config, error) {
 		unit.UseAbsolutePaths = true
 		if yamlUnit.UseAbsolutePaths != nil {
 			unit.UseAbsolutePaths = *yamlUnit.UseAbsolutePaths
+		}
+
+		unit.FollowSymlinks = false
+		if yamlUnit.FollowSymlinks != nil {
+			unit.FollowSymlinks = *yamlUnit.FollowSymlinks
 		}
 
 		if yamlUnit.Sources == nil || yamlUnit.Destination == nil {

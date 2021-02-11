@@ -108,23 +108,36 @@ func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 }
 
 func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
 	if stat, err := os.Lstat(path); err == nil {
 		var linkTarget string
 		// Check if file is symlink
 		if stat.Mode()&os.ModeSymlink != 0 {
-			log.Printf("Found link: %s", path)
 			var err error
 			linkTarget, err = os.Readlink(path)
 			if err != nil {
 				return fmt.Errorf("%s: readlink: %v", stat.Name(), err)
 			}
+
+			// In case the user wants to follow symlinks we eval the symlink target
+			if currentUnitConfig.FollowSymlinks {
+				if linkTargetPath, err := filepath.EvalSymlinks(path); err == nil {
+					if linkTargetInfo, statErr := os.Stat(linkTargetPath); statErr == nil {
+						if linkTargetInfo.Mode().IsRegular() {
+							// If file is regular, we can simply replace the symlink with the actual file
+							path = linkTargetPath
+							linkTarget = ""
+							stat = linkTargetInfo
+						}
+					}
+				}
+			}
 		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
 
 		// now lets create the header as needed for this file within the tarball
 		header, err := tar.FileInfoHeader(stat, filepath.ToSlash(linkTarget))
