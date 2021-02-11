@@ -19,11 +19,13 @@ type BackupFileMetadata struct {
 	BackupBasePath string
 }
 
-func getPathInArchive(filePath string, backupBasePath string, unit config.Unit) string {
+var currentUnitConfig config.Unit
+
+func getPathInArchive(filePath string, backupBasePath string) string {
 	// Remove the base Path from the file Path within the archiver, if option is set
 	pathInArchive := filePath
 
-	if !unit.UseAbsolutePaths {
+	if !currentUnitConfig.UseAbsolutePaths {
 		parentBasePath := filepath.Dir(backupBasePath)
 		pathInArchive = strings.ReplaceAll(filePath, parentBasePath, "")
 
@@ -34,6 +36,8 @@ func getPathInArchive(filePath string, backupBasePath string, unit config.Unit) 
 }
 
 func WriteArchive(backupArchivePath string, filesToBackup []BackupFileMetadata, unit config.Unit) {
+	// Store the current config for other methods to access config parameters
+	currentUnitConfig = unit
 	archiveFile, err := os.Create(backupArchivePath)
 	if err != nil {
 		log.Fatalln(err)
@@ -42,15 +46,15 @@ func WriteArchive(backupArchivePath string, filesToBackup []BackupFileMetadata, 
 
 	switch unit.ArchiveType {
 	case "tar.gz":
-		writeTar(archiveFile, filesToBackup, unit)
+		writeTar(archiveFile, filesToBackup)
 	case "zip":
-		writeZip(archiveFile, filesToBackup, unit)
+		writeZip(archiveFile, filesToBackup)
 	default:
 		log.Fatalf("Can't handle archiver type '%s'", unit.ArchiveType)
 	}
 }
 
-func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit config.Unit) {
+func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 	// set up the gzip and tar writer
 	gw := gzip.NewWriter(archiveFile)
 	defer gw.Close()
@@ -67,7 +71,7 @@ func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 		fileMetadata := filesToBackup[i]
 		filePath := fileMetadata.Path
 
-		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath, unit)
+		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath)
 
 		if err := addFileToTar(tw, filePath, pathInArchive); err != nil {
 			log.Println(err)
@@ -79,7 +83,7 @@ func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 	bar.Finish()
 }
 
-func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit config.Unit) {
+func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 	zw := zip.NewWriter(archiveFile)
 	defer zw.Close()
 
@@ -91,7 +95,7 @@ func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata, unit con
 		fileMetadata := filesToBackup[i]
 		filePath := fileMetadata.Path
 
-		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath, unit)
+		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath)
 
 		if err := addFileToZip(zw, filePath, pathInArchive); err != nil {
 			log.Println(err)
