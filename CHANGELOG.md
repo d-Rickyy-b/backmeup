@@ -11,9 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
-## [0.1.4]
+## [0.1.4] - 2021-02-11
 ### Added
 - Symlink support for tar files ([5d75752](https://github.com/d-Rickyy-b/backmeup/commit/5d757525bbde26429e90a30ea5fba8d721db6f72))
+- Following symlinks (aka replacing a symlink to a file with the actual file) ([a98fe65](https://github.com/d-Rickyy-b/backmeup/commit/a98fe65d8188cd8f5abac2d766cffa594c032757))
+- Ability to only run backups of certain units via `-u`/`--unit` CLI parameter ([92db794](https://github.com/d-Rickyy-b/backmeup/commit/92db794365448c67379f20ff3e2d6bfb998f1f57))
+- Check if archive already exists ([fd88626](https://github.com/d-Rickyy-b/backmeup/commit/fd886263038d6c97cb0f481e9ff0140187d5283e))
+- Add `-t`/`--test-path` CLI parameter for checking exclusion for given paths ([1b13e44](https://github.com/d-Rickyy-b/backmeup/commit/1b13e44a38faa0e472ecaea4b8864cfffc2ab147))
+- Add `-v`/`--version` CLI parameter to just print the tool's version ([2c51b05](https://github.com/d-Rickyy-b/backmeup/commit/2c51b058723e1eb3e46ba2e8ee0b2260ad39b362))
 ### Changed
 - Move archive code to archiver package ([d8666cb](https://github.com/d-Rickyy-b/backmeup/commit/d8666cb5d3acc25a77f3d84f92c52301687dd6ae))
 - Move config code to config package ([0a03807](https://github.com/d-Rickyy-b/backmeup/commit/0a038077a21c88781abf77b85a6a9da7b60df9f6))
