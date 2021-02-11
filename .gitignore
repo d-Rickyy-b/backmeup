@@ -29,3 +29,7 @@ config.yml
 
 # Exclude compiled binaries
 backmeup_*-*
+
+# Exclude archive files
+*.zip
+*.tar.gz
