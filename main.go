@@ -149,10 +149,32 @@ func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit) 
 		backupBasePath = newBackupBasePath
 	}
 
-	backupArchiveName := unit.Name + "-" + timeStamp + "." + unit.ArchiveType
-	backupArchivePath := filepath.Join(backupBasePath, backupArchiveName)
+	var counter = 0
+	var backupExists = true
+	var backupArchiveName, backupArchivePath string
 
-	// TODO check if archive already exists. If yes, append -1 to it and try again
+	for backupExists {
+		if counter == 0 {
+			backupArchiveName = fmt.Sprintf("%s-%s.%s", unit.Name, timeStamp, unit.ArchiveType)
+		} else {
+			backupArchiveName = fmt.Sprintf("%s-%s-%d.%s", unit.Name, timeStamp, counter, unit.ArchiveType)
+		}
+
+		backupArchivePath = filepath.Join(backupBasePath, backupArchiveName)
+
+		if _, err := os.Stat(backupArchivePath); err == nil {
+			// Archive already exists
+			counter += 1
+			continue
+		} else if os.IsNotExist(err) {
+			// Archive does not exist
+			backupExists = false
+		}
+
+		if counter >= 100 {
+			log.Panic("Can't find unused name for archive file! Aborting!")
+		}
+	}
 
 	archiver.WriteArchive(backupArchivePath, filesToBackup, unit)
 	log.Printf("Archive created successfully at '%s'", backupArchivePath)
