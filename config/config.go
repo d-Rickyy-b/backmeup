@@ -131,7 +131,7 @@ func (config *Config) validate() error {
 
 		for _, sourcePath := range unit.Sources {
 			// Each source path must be an existing directory!
-			if !validatePath(sourcePath, true) {
+			if !validatePath(sourcePath, false) {
 				log.Printf("The given source path ('%s') does not exist or is no directory!", sourcePath)
 
 				return bkperrors.ErrCannotAccessSrcDir
