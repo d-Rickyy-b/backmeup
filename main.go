@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/akamensky/argparse"
 	"github.com/bmatcuk/doublestar/v2"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
