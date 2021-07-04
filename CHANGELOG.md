@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
+## [1.0.0] - 2021-07-05
+New major version because of the switch to Go 1.16! The features are not backwards compatible.
+
+### Added
+- Support for single files as sources ([620fd62](https://github.com/d-Rickyy-b/backmeup/commit/620fd620d13a3687015d61f1bf7f3d89cbedf3a5))
+### Changed
+- Improved speed by using WalkDir instead of Walk ([9604540](https://github.com/d-Rickyy-b/backmeup/commit/96045409b099ca77f24cf43c442762aeb87ea62d))
+- Updated Go version to 1.16 ([52b9b34](https://github.com/d-Rickyy-b/backmeup/commit/52b9b34767166f910466799e69d8499fbfa8db16))
+
 ## [0.1.4] - 2021-02-11
 ### Added
 - Symlink support for tar files ([5d75752](https://github.com/d-Rickyy-b/backmeup/commit/5d757525bbde26429e90a30ea5fba8d721db6f72))
@@ -52,7 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2020-11-17
 Initial release! First usable version of backmeup is published as v0.1.0 
 
-[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.4...HEAD
+[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.4...v1.0.0
 [0.1.4]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.1...v0.1.2
