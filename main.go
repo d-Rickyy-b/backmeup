@@ -79,8 +79,8 @@ func getFiles(sourcePath string, unit config.Unit) ([]archiver.BackupFileMetadat
 	}
 
 	// Recursively check directories for files. Add all that do not match the exclusion filters
-	err := filepath.Walk(sourcePath,
-		func(path string, info os.FileInfo, err error) error {
+	err := filepath.WalkDir(sourcePath,
+		func(path string, info fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
