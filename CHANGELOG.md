@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
+## [1.0.1] - 2021-08-23
+A few fixes for the archive creation.
+
+### Changed
+- Better error logging in writeTar and writeZip ([90a8af0](https://github.com/d-Rickyy-b/backmeup/commit/90a8af04bba813e8828aa9f7687c89c37a885567))
+### Fixed
+- Wrong error message for inaccessible destination directory ([e134712](https://github.com/d-Rickyy-b/backmeup/commit/e134712236e7eb65785597d5005a8283e74acb3a))
+- Use panicf to have defer file.Close() run eventually ([7b352ff](https://github.com/d-Rickyy-b/backmeup/commit/7b352ff956287df03c9005b60ecc87eed7847ada))
+- Add better error handling in addFileToTar ([bde2db8](https://github.com/d-Rickyy-b/backmeup/bde2db8eb3cdecbe04919fca0595b305833d467b))
+
 ## [1.0.0] - 2021-07-05
 New major version because of the switch to Go 1.16! The features are not backwards compatible.
 
@@ -61,7 +71,8 @@ New major version because of the switch to Go 1.16! The features are not backwar
 ## [0.1.0] - 2020-11-17
 Initial release! First usable version of backmeup is published as v0.1.0 
 
-[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/d-Rickyy-b/backmeup/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.4...v1.0.0
 [0.1.4]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.2...v0.1.3
