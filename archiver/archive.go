@@ -74,7 +74,7 @@ func writeTar(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath)
 
 		if err := addFileToTar(tw, filePath, pathInArchive); err != nil {
-			log.Println(err)
+			log.Printf("Error while adding %s to the archive. %s", filePath, err)
 		}
 
 		bar.Increment()
@@ -98,7 +98,7 @@ func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 		pathInArchive := getPathInArchive(filePath, fileMetadata.BackupBasePath)
 
 		if err := addFileToZip(zw, filePath, pathInArchive); err != nil {
-			log.Println(err)
+			log.Printf("Error while adding %s to the archive. %s", filePath, err)
 		}
 
 		bar.Increment()
