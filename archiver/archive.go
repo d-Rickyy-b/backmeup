@@ -50,7 +50,7 @@ func WriteArchive(backupArchivePath string, filesToBackup []BackupFileMetadata, 
 	case "zip":
 		writeZip(archiveFile, filesToBackup)
 	default:
-		log.Fatalf("Can't handle archiver type '%s'", unit.ArchiveType)
+		log.Panicf("Can't handle archiver type '%s'", unit.ArchiveType)
 	}
 }
 
