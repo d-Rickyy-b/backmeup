@@ -3,6 +3,7 @@ package archiver
 import (
 	"archive/tar"
 	"backmeup/config"
+	"errors"
 	"fmt"
 	"github.com/cheggaaa/pb/v3"
 	"github.com/klauspost/compress/gzip"
@@ -108,56 +109,68 @@ func writeZip(archiveFile *os.File, filesToBackup []BackupFileMetadata) {
 }
 
 func addFileToTar(tw *tar.Writer, path string, pathInArchive string) error {
-	if stat, err := os.Lstat(path); err == nil {
-		var linkTarget string
-		// Check if file is symlink
-		if stat.Mode()&os.ModeSymlink != 0 {
-			var err error
-			linkTarget, err = os.Readlink(path)
-			if err != nil {
-				return fmt.Errorf("%s: readlink: %v", stat.Name(), err)
-			}
-
-			// In case the user wants to follow symlinks we eval the symlink target
-			if currentUnitConfig.FollowSymlinks {
-				if linkTargetPath, err := filepath.EvalSymlinks(path); err == nil {
-					if linkTargetInfo, statErr := os.Stat(linkTargetPath); statErr == nil {
-						if linkTargetInfo.Mode().IsRegular() {
-							// If file is regular, we can simply replace the symlink with the actual file
-							path = linkTargetPath
-							linkTarget = ""
-							stat = linkTargetInfo
-						}
-					}
-				}
-			}
-		}
-
-		file, err := os.Open(path)
+	stat, statErr := os.Lstat(path)
+	if statErr != nil {
+		return statErr
+	}
+	var linkTarget string
+	// Check if file is symlink
+	if stat.Mode()&os.ModeSymlink != 0 {
+		var err error
+		linkTarget, err = os.Readlink(path)
 		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		// now lets create the header as needed for this file within the tarball
-		header, err := tar.FileInfoHeader(stat, filepath.ToSlash(linkTarget))
-		if err != nil {
-			return nil
-		}
-		header.Name = pathInArchive
-
-		// write the header to the tarball archiver
-		if err := tw.WriteHeader(header); err != nil {
-			return err
+			return fmt.Errorf("%s: readlink: %v", stat.Name(), err)
 		}
 
-		// Check for regular files
-		if stat.Mode().IsRegular() {
-			// copy the file data to the tarball
-			_, err := io.Copy(tw, file)
-			if err != nil {
-				return fmt.Errorf("%s: copying contents: %w", file.Name(), err)
+		// In case the user wants to follow symlinks we eval the symlink target
+		if currentUnitConfig.FollowSymlinks {
+			linkTargetPath, evalSymlinkErr := filepath.EvalSymlinks(path)
+			if evalSymlinkErr != nil {
+				return evalSymlinkErr
 			}
+
+			linkTargetInfo, linkTargetStatErr := os.Stat(linkTargetPath)
+			if linkTargetStatErr != nil {
+				log.Printf("Can't access link target!")
+				return linkTargetStatErr
+			}
+
+			if linkTargetInfo.Mode().IsRegular() {
+				// If file is regular, we can simply replace the symlink with the actual file
+				path = linkTargetPath
+				linkTarget = ""
+				stat = linkTargetInfo
+			} else {
+				log.Printf("Can't access link target. File is not regular!")
+				return errors.New("file is not regular")
+			}
+		}
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// now lets create the header as needed for this file within the tarball
+	header, err := tar.FileInfoHeader(stat, filepath.ToSlash(linkTarget))
+	if err != nil {
+		return err
+	}
+	header.Name = pathInArchive
+
+	// write the header to the tarball archiver
+	if err := tw.WriteHeader(header); err != nil {
+		return err
+	}
+
+	// Check for regular files
+	if stat.Mode().IsRegular() {
+		// copy the file data to the tarball
+		_, err := io.Copy(tw, file)
+		if err != nil {
+			return fmt.Errorf("%s: copying contents: %w", file.Name(), err)
 		}
 	}
 
