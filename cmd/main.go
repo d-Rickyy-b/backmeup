@@ -1,11 +1,7 @@
 package main
 
 import (
-	"backmeup/archiver"
-	"backmeup/config"
 	"fmt"
-	"github.com/akamensky/argparse"
-	"github.com/bmatcuk/doublestar/v2"
 	"io/fs"
 	"log"
 	"os"
@@ -13,6 +9,11 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/akamensky/argparse"
+	"github.com/bmatcuk/doublestar/v2"
+	"github.com/d-Rickyy-b/backmeup/internal/archiver"
+	"github.com/d-Rickyy-b/backmeup/internal/config"
 )
 
 var VERBOSE bool

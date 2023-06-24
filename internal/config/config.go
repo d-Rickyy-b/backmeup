@@ -1,11 +1,11 @@
 package config
 
 import (
-	"backmeup/bkperrors"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/d-Rickyy-b/backmeup/internal/bkperrors"
+	"gopkg.in/yaml.v2"
 )
 
 type Unit struct {
@@ -153,7 +153,7 @@ func (config *Config) validate() error {
 // ReadConfig reads a config file from a given path
 func ReadConfig(configPath string) (Config, error) {
 	log.Printf("Trying to read config file '%s'!", configPath)
-	data, err := ioutil.ReadFile(configPath)
+	data, err := os.ReadFile(configPath)
 
 	if err != nil {
 		log.Println("Can't read config file! Exiting!")
