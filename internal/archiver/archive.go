@@ -2,10 +2,10 @@ package archiver
 
 import (
 	"archive/tar"
-	"backmeup/config"
 	"errors"
 	"fmt"
 	"github.com/cheggaaa/pb/v3"
+	"github.com/d-Rickyy-b/backmeup/internal/config"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zip"
 	"io"

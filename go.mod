@@ -1,4 +1,4 @@
-module backmeup
+module github.com/d-Rickyy-b/backmeup
 
 go 1.16
 
