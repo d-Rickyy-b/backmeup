@@ -17,9 +17,9 @@ jobs:
       - name: Build application
         env:
           GOPROXY: "https://proxy.golang.org"
-        run: go build .
+        run: go build ./cmd/backmeup
 
       - name: Run tests
         env:
           GOPROXY: "https://proxy.golang.org"
-        run: go test -v .
+        run: go test -v ./cmd/backmeup
