@@ -16,8 +16,10 @@ import (
 	"github.com/d-Rickyy-b/backmeup/internal/config"
 )
 
-var VERBOSE bool
-var DEBUG bool
+var (
+	VERBOSE bool
+	DEBUG   bool
+)
 
 var (
 	version = "dev"
@@ -113,7 +115,6 @@ func getFiles(sourcePath string, unit config.Unit) ([]archiver.BackupFileMetadat
 // validatePath checks if a certain file/directory exists
 func validatePath(path string, mustBeDir bool) bool {
 	file, err := os.Stat(path)
-
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Printf("File '%s' does not exist.", path)
@@ -141,7 +142,7 @@ func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit) 
 
 		if !pathExists {
 			log.Printf("Backup path '%s' does not exist.\n", newBackupBasePath)
-			mkdirErr := os.Mkdir(newBackupBasePath, 0777)
+			mkdirErr := os.Mkdir(newBackupBasePath, 0o777)
 
 			if mkdirErr != nil {
 				log.Fatalf("Can't create backup directory '%s'", newBackupBasePath)
@@ -151,8 +152,8 @@ func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit) 
 		backupBasePath = newBackupBasePath
 	}
 
-	var counter = 0
-	var backupExists = true
+	counter := 0
+	backupExists := true
 	var backupArchiveName, backupArchivePath string
 
 	for backupExists {
@@ -303,7 +304,6 @@ func testExclusion(path string, config config.Config, unitNames []string) {
 	} else {
 		log.Printf("Path is not excluded by any of the tested units!")
 	}
-
 }
 
 // printVersionString prints the full version string of backmeup

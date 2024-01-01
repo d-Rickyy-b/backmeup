@@ -101,7 +101,6 @@ func (config Config) FromYaml(yamlData []byte) (Config, error) {
 // It returns true if it exists, otherwise false
 func validatePath(path string, mustBeDir bool) bool {
 	file, err := os.Stat(path)
-
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Printf("File '%s' does not exist.", path)
@@ -154,7 +153,6 @@ func (config *Config) validate() error {
 func ReadConfig(configPath string) (Config, error) {
 	log.Printf("Trying to read config file '%s'!", configPath)
 	data, err := os.ReadFile(configPath)
-
 	if err != nil {
 		log.Println("Can't read config file! Exiting!")
 		os.Exit(1)

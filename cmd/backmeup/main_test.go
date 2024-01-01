@@ -8,10 +8,12 @@ func TestHandleExcludeFileGlob(t *testing.T) {
 	// Try to match a path with a single file glob
 	paths := []string{
 		"/home/test/file.png",
-		"/home/test/path/file.png"}
+		"/home/test/path/file.png",
+	}
 	negativePaths := []string{
 		"/home/test/file.jpg",
-		"/home/test/path/test.exe"}
+		"/home/test/path/test.exe",
+	}
 	pattern := "*.png"
 
 	for _, path := range paths {
@@ -33,7 +35,8 @@ func TestHandleExcludeSubDirectory(t *testing.T) {
 	// Try to exclude any subdirectory called "test" and its content
 	paths := []string{
 		"/home/test/file.png",
-		"/home/test/path/file.png"}
+		"/home/test/path/file.png",
+	}
 	pattern := "**/test/**"
 	// TODO using 'test/' as pattern should work as well
 
@@ -114,7 +117,8 @@ func TestHandleExcludeDoubleWildcardAndWildcardFile(t *testing.T) {
 func TestHandleExcludeDoubleWildcardAndPartialWildcardFile(t *testing.T) {
 	paths := []string{
 		"/home/test/foo/file.png",
-		"/home/test/bar/file.png"}
+		"/home/test/bar/file.png",
+	}
 	pattern := "/home/**/f*.png"
 
 	for _, path := range paths {
@@ -126,7 +130,8 @@ func TestHandleExcludeDoubleWildcardAndPartialWildcardFile(t *testing.T) {
 
 	negativePath := []string{
 		"/home/test/foo/test.png",
-		"/home/test/foo/asdf.png"}
+		"/home/test/foo/asdf.png",
+	}
 	for _, negativePath := range negativePath {
 		negMatched := handleExclude(negativePath, pattern)
 		if negMatched {
@@ -138,7 +143,8 @@ func TestHandleExcludeDoubleWildcardAndPartialWildcardFile(t *testing.T) {
 func TestHandleExcludeDoubleWildcardMultipleChildren(t *testing.T) {
 	paths := []string{
 		"/home/test1/path/file.png",
-		"/home/test2/path/file.png"}
+		"/home/test2/path/file.png",
+	}
 	pattern := "**/path/file.png"
 
 	for _, path := range paths {
