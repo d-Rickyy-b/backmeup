@@ -328,7 +328,7 @@ func main() {
 	parser.ExitOnHelp(true)
 	printVersion := parser.Flag("", "version", &argparse.Options{Required: false, Help: "Print out version", Default: false})
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
-	unitNames := parser.StringList("u", "unit", &argparse.Options{Required: false, Help: "Name of a unit configured in the config file that should be backed up", Default: []string{}})
+	unitNames := parser.StringList("u", "unit", &argparse.Options{Required: false, Help: "Limit the units, defined in the config file, that should be backed up", Default: []string{}})
 	testPath := parser.String("t", "test-path", &argparse.Options{Required: false, Help: "A path to test against the exclude filters defined in the config", Default: ""})
 	dryRun := parser.Flag("n", "dry-run", &argparse.Options{Required: false, Help: "Run the backup in dry-run mode without actually backing up files", Default: false})
 	verbose := parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
