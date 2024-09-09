@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"io/fs"
 	"log"
 	"os"
@@ -131,7 +132,7 @@ func validatePath(path string, mustBeDir bool) bool {
 }
 
 // writeBackup writes the files defined by the config into the defined archive format
-func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit) {
+func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit, dryRun bool) {
 	now := time.Now()
 	timeStamp := now.Format("2006-01-02_15-04")
 	backupBasePath := unit.Destination
@@ -179,12 +180,24 @@ func writeBackup(filesToBackup []archiver.BackupFileMetadata, unit config.Unit) 
 		}
 	}
 
+	if dryRun {
+		fileList := make([]string, len(filesToBackup))
+		for i, file := range filesToBackup {
+			fileList[i] = file.Path
+		}
+
+		log.Printf("[dry-run] Would create archive at '%s'\n", backupArchivePath)
+		log.Printf("[dry-run] Archive contains the following files:\n%s\n", strings.Join(fileList, "\n"))
+		log.Println("[dry-run] Exiting now")
+
+		return
+	}
 	archiver.WriteArchive(backupArchivePath, filesToBackup, unit)
 	log.Printf("Archive created successfully at '%s'", backupArchivePath)
 }
 
 // backupUnit runs the backup for a given unit defined in the given config.yml
-func backupUnit(unit config.Unit) {
+func backupUnit(unit config.Unit, dryRun bool) {
 	// Start backup for a single unit. Each backup creates a single archive file
 	if !unit.Enabled {
 		log.Printf("Skipping backup for unit '%s' because it's disabled.\n", unit.Name)
@@ -230,7 +243,7 @@ func backupUnit(unit config.Unit) {
 		return
 	}
 
-	writeBackup(filesToBackup, unit)
+	writeBackup(filesToBackup, unit, dryRun)
 }
 
 // isUnitInList checks if the name of a unit is in a given string slice
@@ -245,7 +258,7 @@ func isUnitInList(unit config.Unit, unitNames []string) bool {
 }
 
 // runBackup runs all the enabled backups defined in the given config.yml file
-func runBackup(config config.Config, unitNames []string) {
+func runBackup(config config.Config, unitNames []string, dryRun bool) {
 	unitCounter := 0
 	onlySpecifiedUnits := len(unitNames) > 0
 
@@ -262,12 +275,11 @@ func runBackup(config config.Config, unitNames []string) {
 				log.Printf("Skipping backup for unit '%s', because its name wasn't provided as -u argument", unit.Name)
 
 				continue
-			} else {
-				unitCounter++
 			}
+			unitCounter++
 		}
 
-		backupUnit(unit)
+		backupUnit(unit, dryRun)
 	}
 
 	if onlySpecifiedUnits && unitCounter == 0 {
@@ -318,6 +330,7 @@ func main() {
 	configPath := parser.String("c", "config", &argparse.Options{Required: true, Help: "Path to the config.yml file", Default: "config.yml"})
 	unitNames := parser.StringList("u", "unit", &argparse.Options{Required: false, Help: "Name of a unit configured in the config file that should be backed up", Default: []string{}})
 	testPath := parser.String("t", "test-path", &argparse.Options{Required: false, Help: "A path to test against the exclude filters defined in the config", Default: ""})
+	dryRun := parser.Flag("n", "dry-run", &argparse.Options{Required: false, Help: "Run the backup in dry-run mode without actually backing up files", Default: false})
 	verbose := parser.Flag("v", "verbose", &argparse.Options{Required: false, Help: "Enable verbose logging", Default: false})
 	debug := parser.Flag("d", "debug", &argparse.Options{Required: false, Help: "Enable debug logging", Default: false})
 
@@ -356,5 +369,5 @@ func main() {
 	}
 
 	log.Println("Starting backup...")
-	runBackup(conf, *unitNames)
+	runBackup(conf, *unitNames, *dryRun)
 }
