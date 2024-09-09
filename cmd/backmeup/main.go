@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/akamensky/argparse"
-	"github.com/bmatcuk/doublestar/v2"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/d-Rickyy-b/backmeup/internal/archiver"
 	"github.com/d-Rickyy-b/backmeup/internal/config"
 )
