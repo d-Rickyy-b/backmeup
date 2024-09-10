@@ -89,12 +89,15 @@ func getFiles(sourcePath string, unit config.Unit) ([]archiver.BackupFileMetadat
 			if err != nil {
 				return err
 			}
-			if info.IsDir() {
-				return nil
-			}
 
 			isExcluded := handleExcludes(path, unit.Excludes)
-			if isExcluded {
+			if isExcluded && !info.IsDir() {
+				return nil
+			} else if isExcluded && info.IsDir() {
+				return filepath.SkipDir
+			}
+
+			if info.IsDir() {
 				return nil
 			}
 
