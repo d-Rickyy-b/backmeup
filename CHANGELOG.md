@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Docs
 
+## [1.1.1] - 2024-09-10
+
+### Fixed
+- fix: improve execution times for exclusions
+
 ## [1.1.0] - 2024-09-10
 
 ### Added
@@ -94,6 +99,7 @@ New major version because of the switch to Go 1.16! The features are not backwar
 Initial release! First usable version of backmeup is published as v0.1.0 
 
 [unreleased]: https://github.com/d-Rickyy-b/backmeup/compare/v1.0.1...HEAD
+[1.1.1]: https://github.com/d-Rickyy-b/backmeup/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/d-Rickyy-b/backmeup/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/d-Rickyy-b/backmeup/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/d-Rickyy-b/backmeup/compare/v0.1.4...v1.0.0
