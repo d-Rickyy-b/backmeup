@@ -22,7 +22,7 @@ builds:
 checksum:
   name_template: '{{ .ProjectName }}-{{.Version}}_checksums.txt'
 changelog:
-  skip: true
+  disable: true
 
 archives:
   - format: binary
