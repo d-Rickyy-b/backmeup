@@ -1,3 +1,4 @@
+version: 2
 project_name: backmeup
 
 before:
@@ -6,7 +7,7 @@ before:
 
 builds:
   - main: ./cmd/backmeup
-    ldflags: -s -w
+    ldflags: -s -w -X main.version={{.Version}} -X main.date={{.Date}}
     goos:
       - linux
       - darwin
