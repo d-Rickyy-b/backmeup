@@ -1,12 +1,12 @@
 module github.com/d-Rickyy-b/backmeup
 
-go 1.20
+go 1.24
 
 require (
 	github.com/akamensky/argparse v1.4.0
 	github.com/bmatcuk/doublestar/v4 v4.6.1
 	github.com/cheggaaa/pb/v3 v3.1.5
-	github.com/klauspost/compress v1.17.9
+	github.com/klauspost/compress v1.18.7
 	gopkg.in/yaml.v2 v2.4.0
 )
 
